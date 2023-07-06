@@ -179,6 +179,7 @@ Get A records for each pod by using the following format: </br>
 10-244-3-2.default.pod.cluster.local
 ```
 
+
 Communicate with the pods over DNS:
 
 ```
@@ -186,10 +187,12 @@ curl http://10-244-0-5.default.pod.cluster.local
 Hello from daemonsets-control-plane
 ```
 
-# Real world Examples:
+ Therefore this "http://10-244-3-3.default.pod.cluster.local" is the DNS record that can be used to communicate with the pod instead of IP Address. 
+
+world Examples:
 
 ## Monitoring Nodes: Node-Exporter Daemonset
-
+The node exporter enables you to measure various machine resources such as memory, disk and CPU utilization. 
 <br/>
 We clone the official kube-prometheus repo to get monitoring manifests for Kubernetes.
 
@@ -208,7 +211,7 @@ git checkout v0.8.0
 Deploy Prometheus Operator and CRDs
 ```
 cd .\manifests\
-kubectl create -f .\setup\
+kubectl create -f setup/
 ```
 
 Deploy remaining resources including node exporter daemonset
@@ -221,7 +224,9 @@ kubectl get pods -n monitoring
 
 #access prometheus in the browser
 kubectl -n monitoring port-forward svc/prometheus-k8s 9090
+then go to localhost:9090 to access prometheus page 
 
+The go to status --> targets to see that node exporter has been picked up automatically
 ```
 See the Daemonset communications on the Prometheus [targets](http://localhost:9090/targets) page
 
@@ -230,3 +235,6 @@ Checkout my [monitoring guide for kubernetes](../../monitoring/prometheus/kubern
 ## Monitoring: Logging via Fluentd
 
 Take a look at my monitoring guide for [Fluentd](../../monitoring/logging/fluentd/kubernetes/README.md)
+
+FluentD will use the daemonset to run a pod on each node and which runs a fluentD pod on each node and mounts in the volume of the host where 
+evry pod log is being written to. This allows FluentD to pick up all the pod logs in every nods in our cluster and send it to something like elasticsearch or some custome backend end point of the daemonset. 
